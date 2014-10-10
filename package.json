@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Lets you wrap a function to retry based on rules",
   "main": "index.js",
+  "repository": "jjmerino/retry-it",
+  "keywords": ["retry","simple","wrapper"],
+  "files":["index.js"],
   "scripts": {
     "test": "mocha --reporter spec --bail --check-leaks --require should test/"
   },
