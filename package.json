@@ -1,17 +1,24 @@
 {
   "name": "retry-it",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Lets you wrap a function to retry based on rules",
   "main": "index.js",
   "repository": "jjmerino/retry-it",
-  "keywords": ["retry","simple","wrapper"],
-  "files":["index.js"],
+  "keywords": [
+    "retry",
+    "simple",
+    "wrapper"
+  ],
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test": "mocha --reporter spec --bail --check-leaks --require should test/"
   },
   "devDependencies": {
     "mocha": "~1.21.0",
-    "should": "~4.0.0"
+    "should": "~4.0.0",
+    "sinon": "^1.10.3"
   },
   "author": "Jose Joaquin Merino <jomerinog@gmail.com>",
   "license": "MIT"

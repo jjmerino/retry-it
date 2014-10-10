@@ -1,23 +1,26 @@
 exports = module.exports = function retry(f){
   var obj = {};
+  // Configuration options to be exposed via setters
   var _that = undefined;
   var _delay = 200;
-  var _times = 2;
+  var _limit = 2;
   var _count = {val:0};
   var _success = false;
-  var _check = function(val){
+  var _until = function(val){
     return val;
   };
+
+  // tries to run the function and checks if it was successfull or not
   var run = function(args){
     var callback = function(val){
       if(_success !== true){
-        _success = !!_check(val);
+        _success = !!_until(val);
         if(_success===true){
           args[0](val);
         }
       }
     };
-    if(_count.val>=_times||_success){
+    if(_count.val>=_limit||_success){
       //we are done.
     }else{
       var res = f.apply(_that,[callback]);
@@ -33,6 +36,11 @@ exports = module.exports = function retry(f){
   };
 
 
+  /*
+   * Start of public methods (mostly setters)
+   */
+
+
   obj.every = function(delay){
     _delay = delay;
     return obj;
@@ -42,17 +50,24 @@ exports = module.exports = function retry(f){
     _that = context;
     return obj;
   };
-  obj.times = function(times){
-    _times = times;
+
+  obj.limit = function(limit){
+    _limit = limit;
     return obj;
   };
-  obj.check = function(fun){
-    _check = fun;
+
+  obj.until = function(fun){
+    _until = fun;
     return obj;
-  }
+  };
+
   obj.timeout = function(times){
 
-  }
+  };
+
+  /**
+   * Starts trying, pass in the exact parameters you expect from your function.
+   */
   obj.go = function(){
     if(_that===undefined){
       _that=this;

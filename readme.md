@@ -5,35 +5,57 @@ A very simple way to retry a function until a condition is met.
 ## Installation
 
 ```
-  npm install retry-it
+    npm install retry-it
 ```
 
-## Example usage
 
-First require the retry-it library:
-```
-  var retry = require('retry-it');
-```
+To use, include in your node application:
 
-Then take any function that may fail. E.g an async function. and wrap it like so:
 ```
-// Example function
-var getUsers = function(callback){
-   // a function that queries a server and passes a list of users to the callback
-   // i.e:  callback(listOfUsers);
-}
-
-retry(getUsers)
-   .times(10) // run at most 10 times
-  .every(100) // try every 100 ms
-  .check(function(result){ 
-    return result.length > 0;// return a truthy or falsy value. Truthy will indicate retry-it to stop.
-  })
-  // Starts executing
-  .go(function(result){// (this is the callback you would originally pass to getUser.)
-    console.log(result);// Note: This is only called once. After check returns true
-  });
+    var retry = require('retry-it');
 ```
 
-Currently, your function can either return a truthy/falsy value to report success, or it must have a single callback as the first parameter.
+## Example use
 
+**retry until a callback work as expected:**
+
+```
+
+    retry(getUsers) // getUsers takes a callback
+      .every(100) // ms
+      .until(function(users){
+        return users.length>0; // until the users array has something.
+      })
+      .limit(9000)
+      .go(function(users){
+        console.log(users); // a list of users
+      });
+```
+
+## Limitations
+
+Currently the retried function must accept a single callback. You can easily turn a function into this format. For example:
+
+```
+
+    // before
+    var originalFunction = function(arg1,arg2){
+       var something;
+       // something happens
+       return something;
+    }
+    // usage before
+    var res = originalFunction('foo','var');
+    console.log(res);
+
+
+    // after
+    var wrappedFunction = function(cb){
+      cb(originalfunction('foo','var'));
+    }
+
+    //usage after
+    wrappedFunction(function(result){
+      console.log(result);
+});
+```

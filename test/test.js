@@ -6,15 +6,15 @@ describe('retryIt()',function(){
     var guessNumber;
     var getUsers;
     var theNumber;
-    var guess;
+    var tries;
     var isdone;
     beforeEach(function(){
-      guess = 0;
+      tries = 0;
       theNumber = 5;
       isdone=false;
       guessNumber = function(){
-        guess++;
-        if(guess === theNumber){
+        tries++;
+        if(tries === theNumber){
           isdone =true;
           return true;
 
@@ -23,8 +23,8 @@ describe('retryIt()',function(){
         }
       };
       getUsers = function(callback){
-        guess++;
-        if(guess === theNumber){
+        tries++;
+        if(tries === theNumber){
           // make it work
           isdone =true;
           // simulate ajax working
@@ -42,14 +42,14 @@ describe('retryIt()',function(){
 
     it('should retry if it fails.',function(done){
       retry(guessNumber)
-        .times(10)
+        .limit(10)
         .every(5)
         .go();
       setTimeout(function(){
         if(!isdone){
           done('Didnt retry');
         }
-        else if(guess>5){
+        else if(tries>5){
           done('Tried more times than necessary');
         }else{
           done();
@@ -58,9 +58,9 @@ describe('retryIt()',function(){
     });
     it('should handle async functions.',function(done){
       retry(getUsers)
-        .times(10) // check at most 10 times
+        .limit(10) // check at most 10 times
         .every(100) // try every 5 ms
-        .check(function(result){ // return a truthy or falsy value. timeout is considered failing.
+        .until(function(result){ // return a truthy or falsy value. timeout is considered failing.
           return result.length > 0;
         })
         .go(function(result){// what we want to do with the data. After we succeed.
@@ -70,12 +70,37 @@ describe('retryIt()',function(){
         if(!isdone){
           done('Didnt retry');
         }
-        else if(guess>5){
-          done('Tried more times than necessary. Got '+ guess);
+        else if(tries>5){
+          done('Tried more times than necessary. Got '+ tries);
         }else{
           done();
         }
-      },700)
+      },700);
+    });
+
+    it('should work for waiting for a certain state',function(done){
+      var userHasReturned = false;
+      var user = {};
+      var getUser = function(callback){
+        callback(user);
+      };
+      var logs = [];
+      retry(getUser).every(100).limit(9000).until(function(){
+        return userHasReturned;
+      }).go(function(result){
+        logs.push('1');
+      });
+      logs.length.should.equal(0);
+
+      setTimeout(function(){
+        userHasReturned = true;
+        user = {name:'jose'};
+      },100);
+
+      setTimeout(function(){
+        logs.length.should.equal(1);
+        done();
+      },300);
     })
   });
 
