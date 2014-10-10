@@ -1,6 +1,6 @@
 {
   "name": "retry-it",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Lets you wrap a function to retry based on rules",
   "main": "index.js",
   "repository": "jjmerino/retry-it",
