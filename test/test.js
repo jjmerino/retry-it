@@ -8,25 +8,29 @@ describe('retryIt()',function(){
       var guess = 0;
       var isdone=false;
       var guessNumber = function(){
+        guess++;
         if(guess === theNumber){
           isdone =true;
-          done();
           return true;
 
         }else{
-          guess++;
           return false;
         }
       };
       retry(guessNumber)
-        .times(6)
-        .every(20)
+        .times(7)
+        .every(5)
         .go();
       setTimeout(function(){
         if(!isdone){
           done('Didnt retry');
         }
-      },500)
+        else if(guess>5){
+          done('Tried more times than necessary');
+        }else{
+          done();
+        }
+      },42)
     })
   });
 

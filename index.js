@@ -4,17 +4,22 @@ exports = module.exports = function retry(f){
   var _delay = 200;
   var _times = 2;
   var _count = 0;
-
+  var _success = false;
   var run = function(){
-    f.apply(_that,arguments)
+    var res = f.apply(_that,arguments)
+    if(res){
+      _success = true;
+    }
     _count++;
-    if(_count>=_times){
-      // we failed :(
+    if(_count>=_times||_success){
+      //we are done.
     }else{
       setTimeout(run,_delay);
     }
     return obj;
   };
+
+
   obj.every = function(delay){
     _delay = delay;
     return obj;
