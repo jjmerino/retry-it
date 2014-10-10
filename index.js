@@ -3,18 +3,31 @@ exports = module.exports = function retry(f){
   var _that = undefined;
   var _delay = 200;
   var _times = 2;
-  var _count = 0;
+  var _count = {val:0};
   var _success = false;
-  var run = function(){
-    var res = f.apply(_that,arguments)
-    if(res){
-      _success = true;
-    }
-    _count++;
-    if(_count>=_times||_success){
+  var _check = function(val){
+    return val;
+  };
+  var run = function(args){
+    var callback = function(val){
+      if(_success !== true){
+        _success = !!_check(val);
+        if(_success===true){
+          args[0](val);
+        }
+      }
+    };
+    if(_count.val>=_times||_success){
       //we are done.
     }else{
-      setTimeout(run,_delay);
+      var res = f.apply(_that,[callback]);
+      _count.val++;
+
+      if(res){
+        _success = true;
+      }
+
+      setTimeout(run.bind(null,args),_delay);
     }
     return obj;
   };
@@ -33,12 +46,18 @@ exports = module.exports = function retry(f){
     _times = times;
     return obj;
   };
+  obj.check = function(fun){
+    _check = fun;
+    return obj;
+  }
+  obj.timeout = function(times){
 
+  }
   obj.go = function(){
     if(_that===undefined){
       _that=this;
     }
-    run.apply(_that,arguments);
+    run(arguments);
     return obj;
   };
 
