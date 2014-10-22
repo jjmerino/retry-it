@@ -1,7 +1,6 @@
 # Retry it
 
-A very simple way to retry a function until a condition is met. 
-(This has not been tested in production, it was part of a 2 hour hackathon project.)
+A very simple way to retry a function until a condition is met.
 
 ## Installation
 
