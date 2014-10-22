@@ -2,6 +2,8 @@
 
 A very simple way to retry a function until a condition is met.
 
+If you find a bug please create an issue or pull request.
+
 ## Installation
 
 ```
